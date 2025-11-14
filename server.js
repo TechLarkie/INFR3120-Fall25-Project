@@ -1,10 +1,20 @@
 //server side implementations
+import dotenv from 'dotenv';
+dotenv.config(); //load host ID which is imported from .env
+
+
+//MongoDB implementation
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("Connected to MongoDB"))
+    .catch(err => console.error("MongoDB connection error:",err));
+
 import express from 'express';
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
+import mongoose from "mongoose";
+
 import {stores, tournaments, players, decks } from './public/data.js'
 
-dotenv.config(); //load host ID which is imported from .env
+
 
 const app = express(); //creates express server object and start webpage
 
