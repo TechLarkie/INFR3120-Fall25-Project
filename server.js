@@ -25,6 +25,7 @@ app.use(express.urlencoded({extended: true})) //Middleware which allows express 
 app.use(express.static('public')); //serves static files
 
 
+
 const PORT = process.env.PORT || 3000; //Start the server and post a message to the console log which states which port is being listened to
 app.listen(PORT, () => {console.log(`server listening on port ${PORT}`)});
 
