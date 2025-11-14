@@ -1,4 +1,6 @@
 //server side implementations
+import mongoose from "mongoose";
+
 import dotenv from 'dotenv';
 dotenv.config(); //load host ID which is imported from .env
 
@@ -10,8 +12,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 import express from 'express';
 import bodyParser from 'body-parser';
-import mongoose from "mongoose";
-
+import cors from 'cors'; //allows the frontend to talk with the backend
 import {stores, tournaments, players, decks } from './public/data.js'
 
 
@@ -19,6 +20,7 @@ import {stores, tournaments, players, decks } from './public/data.js'
 const app = express(); //creates express server object and start webpage
 
 app.use(bodyParser.json()); //Middleware which parses JSON
+app.use(express.urlencoded({extended: true})) //Middleware which allows express to read data from forms which are sent from HTML
 
 app.use(express.static('public')); //serves static files
 
