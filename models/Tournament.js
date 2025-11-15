@@ -1,4 +1,4 @@
-// Tournament Data
+//Tournament Data
 
 import mongoose from "mongoose";
 
