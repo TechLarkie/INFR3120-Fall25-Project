@@ -2,7 +2,7 @@
 
 import express from "express"; //import express
 
-import Store from "../models/Store.js"; //imports data from Store.js
+
 
 const router = express.Router();
 
