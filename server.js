@@ -69,6 +69,7 @@ app.post("/api/host/setup", async (req, res) => {
   catch (error) {
     res.status(500).json({ valid: false, message: "The server has run into an error :( pls try again" });
   }
+}
 
 //next comes the tournament joining things >:3
 app.post('/api/join-tournament', async (req, res) => {
@@ -83,9 +84,7 @@ app.post('/api/join-tournament', async (req, res) => {
           tournament.registeredPlayers.push(playerId);
           await tournament.save();
         }
-    else{
-        res.json({ valid: true });
-    }
+        return res.json({ valid: true });
   } 
         
     catch {
@@ -120,19 +119,17 @@ app.post('/api/start-tournament', async (req, res) => {
         let pairings = [];
 
         if (participants.length % 2 !== 0) {
-            const standings = tournament.standings || new Map();
-            const scores = Array.from(standings.values());
+            const standings = tournament.standings || {};
+            const scores = Object.values(standings);
             const minScore = scores.length ? Math.min(...scores) : 0;
-            const lowestPlayers = participants.filter(p => (standings.get(p) || 0) === minScore);
-            const playerBye = lowestPlayers[Math.floor(Math.random() * lowestPlayers.length)];
-            
-            pairings.push({ player1: playerBye, player2: null, bye: true });
-            standings.set(playerBye, (standings.get(playerBye) || 0) + 1);
-            
-            participants = participants.filter(p => p !== playerBye);
+            const lowestPlayers = participants.filter(p => (standings[p] || 0) === minScore);
+            const byePlayer = lowestPlayers[Math.floor(Math.random() * lowestPlayers.length)];
+        
+            pairings.push({ player1: byePlayer, player2: null, bye: true });
+            standings[byePlayer] = (standings[byePlayer] || 0) + 1;
+            participants = participants.filter(p => p !== byePlayer);
             tournament.standings = standings;
-        }
-
+}
         for (let x = 0; x < participants.length; x += 2) {
             pairings.push({ player1: participants[x], player2: participants[x + 1], bye: false });
         }
@@ -158,7 +155,7 @@ app.post('/api/start-tournament', async (req, res) => {
 
 
 //locating stores within cities 
-app.get('/api/stores/:city', (req, res) => {
+app.get('/api/stores/:city', async (req, res) => {
     const city = req.params.city;
     
       try {
