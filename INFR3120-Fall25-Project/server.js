@@ -54,13 +54,7 @@ app.post("/api/host/setup", async (req, res) => {
     return res.json({ valid: false, message: "wrong number of players!! pls change" });
 
   try {
-    const newTournament = new Tournament({
-      hostId,
-      participants: players,
-      standings: players.map((p) => ({ playerId: p, points: 0 })),
-      active: true,
-    });
-
+    const newTournament = new Tournament({hostId, participants: players, standings: players.map((p) => ({ playerId: p, points: 0 })), active: true,});
     const saved = await newTournament.save();
 
     res.json({ success: true, tournamentId: saved._id });
