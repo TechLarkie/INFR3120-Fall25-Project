@@ -69,7 +69,7 @@ app.post("/api/host/setup", async (req, res) => {
   catch (error) {
     res.status(500).json({ valid: false, message: "The server has run into an error :( pls try again" });
   }
-}
+});
 
 //next comes the tournament joining things >:3
 app.post('/api/join-tournament', async (req, res) => {
