@@ -143,8 +143,8 @@ app.post('/api/start-tournament', async (req, res) => {
 
 //grab actives
     app.get("/api/tournaments/active", async (req, res) => {
-  const active = await Tournament.find({ active: true });
-  res.json(active);
+      const active = await Tournament.find({ active: true });
+      res.json(active);
 });
 
 
@@ -154,7 +154,7 @@ app.get('/api/stores/:city', async (req, res) => {
     
       try {
         const storeList = await Store.find({ city });
-        res.json(storeList);
+        return res.json(storeList);
       } 
       
       catch {
