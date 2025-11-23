@@ -1,16 +1,16 @@
 //Player Data
 
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 
 const playerSchema = new mongoose.Schema(
 
     {
         name: {type: String, required: true},
         rating: {type: Number, default:1000},
-        country: String,
+        country: {type: String},
     },
     {timestamps: true}
 
 );
 
-export default mongoose.model("Player", playerSchema);
+module.exports = mongoose.model("Player",playerSchema);
