@@ -13,13 +13,13 @@ router.get('/', function(req, res, next) {
 });
 
 /*GET Store Page */
-router.get('/store', function(req, res, next) {
-  res.render('store', { title: 'DrawThree | Find a Store' });
-});
+//router.get('/store', function(req, res, next) {
+  //res.render('store', { title: 'DrawThree | Find a Store' });
+//});
 
 /*Get Tournament Page */
-router.get('/tournament', function(req, res, next) {
-  res.render('tournament', { title: 'DrawThree \ Tournaments' });
-});
+//router.get('/tournament', function(req, res, next) {
+  //res.render('tournament', { title: 'DrawThree \ Tournaments' });
+//});
 
 module.exports = router;

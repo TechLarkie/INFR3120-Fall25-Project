@@ -1,2 +1,89 @@
+<!--Store page-->
+
+
 <%- include('Partials/header') %>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+   
+
+  </head>
+  <body>
+    <h1>Find a Store</h1>
+
+    <!--code which allows the user to search by city-->
+    <form method="get" action="/store">
+      <div class="form-row">
+        <label for="city">City:&nbsp;</label>
+        <input
+          type="text"
+          id="city"
+          name="city"
+          value="<%= city %>"
+          placeholder="e.g. Toronto" <% //this is just a place holder that automatically appearches in the search box, giving the user an example of what they could type %>
+        />
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a href="/store" class="btn btn-secondary">Clear</a>
+      </div>
+    </form>
+
+    <!--Code which creates a list of stores that are currently listed-->
+    <h2>Stores</h2>
+    <table> <!--creates an HTML table-->
+      <thead>
+        <tr> <!--table row-->
+          <th>Store Name</th> <!--each of these are table headers-->
+          <th>City</th>
+          <th>Address</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (stores && stores.length) { %> <!--checks to make sure that the store that is being searched is actually in the database-->
+          <% stores.forEach(function(store) { %> <!--loop through the stores until the specified one is found-->
+            <tr>
+              <td><%= store.name %></td>
+              <td><%= store.city %></td>
+              <td><%= store.address %></td>
+            </tr>
+          <% }); %>
+        <% } else { %> <!--if the store is not found then this is an alternate output (basically just a 'store not found output')-->
+          <tr>
+            <td colspan="3" style="text-align:center;">
+              No stores found.
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+    <!--Add a new store-->
+    <hr />
+    <h2>Add a Store</h2>
+
+    <!--the below code snippets all create a submission box in whic the user can input the requested information about the store-->
+    <form method="post" action="/store">
+      <div class="form-row">
+        <label for="name">Store Name:&nbsp;</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+      <div class="form-row">
+        <label for="cityInput">City:&nbsp;</label>
+        <input type="text" id="cityInput" name="city" required />
+      </div>
+      <div class="form-row">
+        <label for="address">Address:&nbsp;</label>
+        <input type="text" id="address" name="address" required />
+      </div>
+      <button type="submit" class="btn btn-success">Add Store</button>
+    </form>
+
+    <p style="margin-top:20px;">
+      <a href="/">← Back to home</a>
+    </p>
+  </body>
+</html>
+
 <%- include('Partials/footer') %>
