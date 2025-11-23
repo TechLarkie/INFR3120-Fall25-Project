@@ -4,6 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+//mongoose connection lines
+require('dotenv').config();
+require("./MongoConfig/mongoDB-Config")
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
