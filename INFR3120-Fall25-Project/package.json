@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "infr3120-fall25-project/server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "body-parser": "^2.2.0",
