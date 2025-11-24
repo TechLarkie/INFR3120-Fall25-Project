@@ -1,15 +1,16 @@
 //Store Data
 
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const storeSchema = new mongoose.Schema(
     {
         name: String,
         city: String,
         address: String,
+        hostId: String, //this is used by api/verify-host
     },
-    {timestamp: true}
+    {timetamps: true}
 
 );
 
-module.exports = mongoose.model("Store",storeSchema);
+export default mongoose.model("Store", storeSchema);

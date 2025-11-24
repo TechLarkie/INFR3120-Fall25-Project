@@ -1,89 +1,126 @@
-<!--Store page-->
+<!--Store page webpage code-->
 
 
 <%- include('Partials/header') %>
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title><%= title %></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-   
 
-  </head>
-  <body>
-    <h1>Find a Store</h1>
+<div class="container my-4">
+  <h1 class="mb-3">Find a Store</h1>
+  <p class="text-muted">
+    Enter the name of a city to find participating DrawThree Stores.
+  </p>
 
-    <!--code which allows the user to search by city-->
-    <form method="get" action="/store">
-      <div class="form-row">
-        <label for="city">City:&nbsp;</label>
-        <input
-          type="text"
-          id="city"
-          name="city"
-          value="<%= city %>"
-          placeholder="e.g. Toronto" <% //this is just a place holder that automatically appearches in the search box, giving the user an example of what they could type %>
-        />
-        <button type="submit" class="btn btn-primary">Search</button>
-        <a href="/store" class="btn btn-secondary">Clear</a>
-      </div>
-    </form>
+  <!--creating the search form-->
+  <form id="storeSearchForm" class="row g-3 mb-4">
+    <div class="col-md-6">
+      <label for="cityInput" class="form-label">City</label>
+      <input
+        type="text"
+        class="form-control"
+        id="cityInput"
+        placeholder="e.g. Toronto"
+        required
+      />
+    </div>
+      <!--button for the search form-->
+    <div class="col-md-3 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">
+        Search
+      </button>
+    </div>
+  </form>
 
-    <!--Code which creates a list of stores that are currently listed-->
-    <h2>Stores</h2>
-    <table> <!--creates an HTML table-->
-      <thead>
-        <tr> <!--table row-->
-          <th>Store Name</th> <!--each of these are table headers-->
-          <th>City</th>
-          <th>Address</th>
+  <!--this is being used to show either success or error messages-->
+  <div id="storeMessage" class="mb-3"></div>
+
+  <!--the code below creates a result table with the requested information from the user-->
+  <div class="table-responsive">
+    <table class="table table-striped" id="storeResultsTable" style="display:none;">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">Store Name</th>
+          <th scope="col">City</th>
+          <th scope="col">Address</th>
         </tr>
       </thead>
-      <tbody>
-        <% if (stores && stores.length) { %> <!--checks to make sure that the store that is being searched is actually in the database-->
-          <% stores.forEach(function(store) { %> <!--loop through the stores until the specified one is found-->
-            <tr>
-              <td><%= store.name %></td>
-              <td><%= store.city %></td>
-              <td><%= store.address %></td>
-            </tr>
-          <% }); %>
-        <% } else { %> <!--if the store is not found then this is an alternate output (basically just a 'store not found output')-->
-          <tr>
-            <td colspan="3" style="text-align:center;">
-              No stores found.
-            </td>
-          </tr>
-        <% } %>
+      <tbody id="storeResultsBody">
+        <!--Rows will be injected by JS-->
       </tbody>
     </table>
+  </div>
+</div>
 
-    <!--Add a new store-->
-    <hr />
-    <h2>Add a Store</h2>
+<!--event listeners which will wait for HTML to be loaded before before grabbing the listed references-->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('storeSearchForm');
+    const cityInput = document.getElementById('cityInput');
+    const messageDiv = document.getElementById('storeMessage');
+    const table = document.getElementById('storeResultsTable');
+    const tbody = document.getElementById('storeResultsBody');
 
-    <!--the below code snippets all create a submission box in whic the user can input the requested information about the store-->
-    <form method="post" action="/store">
-      <div class="form-row">
-        <label for="name">Store Name:&nbsp;</label>
-        <input type="text" id="name" name="name" required />
-      </div>
-      <div class="form-row">
-        <label for="cityInput">City:&nbsp;</label>
-        <input type="text" id="cityInput" name="city" required />
-      </div>
-      <div class="form-row">
-        <label for="address">Address:&nbsp;</label>
-        <input type="text" id="address" name="address" required />
-      </div>
-      <button type="submit" class="btn btn-success">Add Store</button>
-    </form>
+    form.addEventListener('submit', async (e) => { //submit event handler
+      e.preventDefault();
 
-    <p style="margin-top:20px;">
-      <a href="/">← Back to home</a>
-    </p>
-  </body>
-</html>
+      const city = cityInput.value.trim();
+
+      //if the user does not enter a city into the requested field
+      if (!city) {
+        messageDiv.innerHTML =
+          '<div class="alert alert-warning">Please enter a city :( ! .</div>';
+        table.style.display = 'none';
+        tbody.innerHTML = '';
+        return;
+      }
+
+      messageDiv.innerHTML =
+        '<div class="alert alert-info mb-2">Searching stores...</div>';
+      table.style.display = 'none';
+      tbody.innerHTML = '';
+
+      try {
+        const res = await fetch(`/api/stores/${encodeURIComponent(city)}`); //this is actually calling backend API
+        if (!res.ok) {
+          throw new Error('Request failed');
+        }
+
+        const stores = await res.json();
+
+        if (!Array.isArray(stores) || stores.length === 0) { //basically just outputs a message saying that there was no stores found if the city that the user typed does not have any cities in it
+          messageDiv.innerHTML =
+            '<div class="alert alert-warning">Unfortunately there were no stores found in this city :( !.</div>';
+          table.style.display = 'none';
+          tbody.innerHTML = '';
+          return;
+        }
+
+        //success message which shows how many stores were found
+        messageDiv.innerHTML =
+          '<div class="alert alert-success">Found ' +
+          stores.length +
+          ' store(s).</div>';
+            
+        tbody.innerHTML = stores //literally builds a table with all of the stores and their accompanying info
+          .map(
+            (store) => `
+            <tr>
+              <td>${store.name || ''}</td>
+              <td>${store.city || ''}</td>
+              <td>${store.address || ''}</td>
+            </tr>
+          `
+          )
+          .join('');
+
+        table.style.display = ''; //table is finally displayed
+      } catch (err) {
+        console.error(err);
+        messageDiv.innerHTML =
+          '<div class="alert alert-danger">Error searching stores. Please try again >:(.</div>';
+        table.style.display = 'none';
+        tbody.innerHTML = '';
+      }
+    });
+  });
+</script>
 
 <%- include('Partials/footer') %>

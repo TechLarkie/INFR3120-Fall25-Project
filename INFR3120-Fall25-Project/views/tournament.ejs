@@ -1,2 +1,393 @@
+<% //webpage code for the tournament page %>
 <%- include('Partials/header') %>
+
+<div class="container my-4">
+  <h1 class="mb-3">Tournaments</h1>
+  <p class="text-muted">
+    Use this page to host, join, and view active tournaments :D.
+  </p>
+
+  <!--There is SO much code here I will say it is all dedicated to hosting a tournament -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h2 class="h5 mb-3">Host a Tournament</h2>
+
+      <!--this is the start of the form which will appear on the website and allow the user to host a tournament-->
+      <form id="hostForm" class="row g-3">
+        <div class="col-md-4">
+          <label for="hostIdInput" class="form-label">Host ID (Be sure to save this ID!)</label>
+          <input
+            type="text"
+            class="form-control"
+            id="hostIdInput"
+            placeholder="Enter your host ID"
+            required
+          />
+        </div>
+        <!--this is for adding the players, each player name is added one line at a time into the submission box-->
+        <div class="col-md-8">
+          <label for="playersInput" class="form-label">
+            Players (one per line, 4 players minimum and 32 players maximum)
+          </label>
+          <textarea
+            class="form-control"
+            id="playersInput"
+            rows="4"
+            placeholder="Player1&#10;Player2&#10;Player3&#10;Player4" <% //this code just adds placeholders in the player submission box %>
+            required
+          ></textarea>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-success"> <!--creates the submission button for creating the tournament-->
+            Create Tournament
+          </button>
+        </div>
+      </form>
+      <div id="hostMessage" class="mt-3"></div> <!--displays a message letting you know whether or not the submission worked-->
+    </div>
+  </div>
+
+  <!--Code for joining a tournament-->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h2 class="h5 mb-3">Join a Tournament !</h2>
+      <form id="joinForm" class="row g-3">
+        <div class="col-md-4">
+          <label for="joinTournamentId" class="form-label">Tournament ID</label>
+          <input
+            type="text"
+            class="form-control"
+            id="joinTournamentId"
+            placeholder="Paste tournament ID here"
+            required <%//players are required to paste the tournament ID which was given to them so that they can join the tournament%>
+          />
+        </div>
+        <!--code for users to input their player ID-->
+        <div class="col-md-4">
+          <label for="playerIdInput" class="form-label">Player ID</label>
+          <input
+            type="text"
+            class="form-control"
+            id="playerIdInput"
+            placeholder="Enter your player ID"
+            required
+          />
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">
+            Join Tournament
+          </button>
+        </div>
+      </form>
+      <div id="joinMessage" class="mt-3"></div>
+    </div>
+  </div>
+
+  <!--code to actually start the tournament-->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h2 class="h5 mb-3">Start a Tournament (Generate Pairings)</h2>
+      <form id="startForm" class="row g-3">
+        <div class="col-md-6">
+          <label for="startTournamentId" class="form-label">Tournament ID</label>
+          <input
+            type="text"
+            class="form-control"
+            id="startTournamentId"
+            placeholder="Tournament ID"
+            required
+          />
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="submit" class="btn btn-warning w-100">
+            Start Tournament
+          </button>
+        </div>
+        <div class="col-12 mt-2">
+          <small class="text-muted">
+            This will use the participants list saved in the tournament document.
+          </small>
+        </div>
+      </form>
+      <div id="startMessage" class="mt-3"></div>
+      <div id="pairingsOutput" class="mt-3"></div>
+    </div>
+  </div>
+
+  <!--tournament list which acts as a directory, displaying all currently active tournaments-->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">Active Tournaments</h2>
+        <button id="refreshTournaments" class="btn btn-outline-secondary btn-sm">
+          Refresh
+        </button>
+      </div>
+
+      <div id="tournamentMessage" class="mb-2"></div>
+
+      <div class="table-responsive">
+        <table
+          class="table table-striped"
+          id="tournamentTable"
+          style="display:none;"
+        >
+          <thead class="table-dark">
+            <tr>
+              <th scope="col">Tournament ID</th>
+              <th scope="col">Host ID</th>
+              <th scope="col"># Participants</th>
+              <th scope="col"># Registered Players</th>
+              <th scope="col">Active</th>
+            </tr>
+          </thead>
+          <tbody id="tournamentTableBody">
+            <!--Rows injected by JS-->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script> //event listener labyrinth
+  document.addEventListener('DOMContentLoaded', () => {
+    const hostForm = document.getElementById('hostForm');
+    const joinForm = document.getElementById('joinForm');
+    const startForm = document.getElementById('startForm');
+    const hostMessage = document.getElementById('hostMessage');
+    const joinMessage = document.getElementById('joinMessage');
+    const startMessage = document.getElementById('startMessage');
+    const pairingsOutput = document.getElementById('pairingsOutput');
+
+    const tournamentTable = document.getElementById('tournamentTable');
+    const tournamentTableBody = document.getElementById('tournamentTableBody');
+    const tournamentMessage = document.getElementById('tournamentMessage');
+    const refreshBtn = document.getElementById('refreshTournaments');
+
+    // Host a tournament
+    hostForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hostMessage.innerHTML = '';
+      const hostId = document.getElementById('hostIdInput').value.trim();
+      const playersRaw = document.getElementById('playersInput').value;
+
+      const players = playersRaw
+        .split('\n')
+        .map((p) => p.trim())
+        .filter((p) => p.length > 0);
+
+      if (players.length < 4 || players.length > 32) {
+        hostMessage.innerHTML =
+          '<div class="alert alert-warning">You must provide between 4 and 32 players.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/host/setup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hostId, players }),
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          hostMessage.innerHTML =
+            '<div class="alert alert-danger">' +
+            (data.message || 'Failed to create tournament.') +
+            '</div>';
+          return;
+        }
+
+        hostMessage.innerHTML =
+          '<div class="alert alert-success">Tournament created! ID: <code>' +
+          data.tournamentId +
+          '</code></div>';
+        hostForm.reset();
+        loadActiveTournaments();
+      } catch (err) {
+        console.error(err);
+        hostMessage.innerHTML =
+          '<div class="alert alert-danger">Server error creating tournament.</div>';
+      }
+    });
+
+    // Join a tournament
+    joinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      joinMessage.innerHTML = '';
+
+      const tournamentId = document
+        .getElementById('joinTournamentId')
+        .value.trim();
+      const playerId = document.getElementById('playerIdInput').value.trim();
+
+      if (!tournamentId || !playerId) {
+        joinMessage.innerHTML =
+          '<div class="alert alert-warning">Tournament ID and Player ID are required.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/join-tournament', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tournamentId, playerId }),
+        });
+
+        const data = await res.json();
+
+        if (!data.valid) {
+          joinMessage.innerHTML =
+            '<div class="alert alert-danger">' +
+            (data.message || 'Failed to join tournament.') +
+            '</div>';
+          return;
+        }
+
+        joinMessage.innerHTML =
+          '<div class="alert alert-success">Successfully joined the tournament!</div>';
+        joinForm.reset();
+        loadActiveTournaments();
+      } catch (err) {
+        console.error(err);
+        joinMessage.innerHTML =
+          '<div class="alert alert-danger">Server error joining tournament.</div>';
+      }
+    });
+
+    // Start a tournament
+    startForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      startMessage.innerHTML = '';
+      pairingsOutput.innerHTML = '';
+
+      const tournamentId = document
+        .getElementById('startTournamentId')
+        .value.trim();
+
+      if (!tournamentId) {
+        startMessage.innerHTML =
+          '<div class="alert alert-warning">Tournament ID is required.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/start-tournament', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tournamentId }),
+        });
+
+        const data = await res.json();
+
+        if (!data.valid) {
+          startMessage.innerHTML =
+            '<div class="alert alert-danger">' +
+            (data.error || 'Failed to start tournament.') +
+            '</div>';
+          return;
+        }
+
+        startMessage.innerHTML =
+          '<div class="alert alert-success">Tournament started! Pairings generated.</div>';
+
+        if (Array.isArray(data.pairings) && data.pairings.length > 0) {
+          const listItems = data.pairings
+            .map((p, idx) => {
+              if (p.bye) {
+                return `<li class="list-group-item">
+                  Round ${idx + 1}: <strong>${p.player1}</strong> receives a bye.
+                </li>`;
+              }
+              return `<li class="list-group-item">
+                Round ${idx + 1}: <strong>${p.player1}</strong> vs <strong>${p.player2}</strong>
+              </li>`;
+            })
+            .join('');
+
+          pairingsOutput.innerHTML = `
+            <h3 class="h6 mt-3">Pairings</h3>
+            <ul class="list-group list-group-flush">
+              ${listItems}
+            </ul>
+          `;
+        }
+
+        loadActiveTournaments();
+      } catch (err) {
+        console.error(err);
+        startMessage.innerHTML =
+          '<div class="alert alert-danger">Server error starting tournament.</div>';
+      }
+    });
+
+    // Load active tournaments
+    async function loadActiveTournaments() {
+      tournamentMessage.innerHTML =
+        '<div class="alert alert-info mb-2">Loading active tournaments...</div>';
+      tournamentTable.style.display = 'none';
+      tournamentTableBody.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/tournaments/active');
+        if (!res.ok) {
+          throw new Error('Request failed');
+        }
+
+        const tournaments = await res.json();
+
+        if (!Array.isArray(tournaments) || tournaments.length === 0) {
+          tournamentMessage.innerHTML =
+            '<div class="alert alert-warning">No active tournaments found.</div>';
+          tournamentTable.style.display = 'none';
+          tournamentTableBody.innerHTML = '';
+          return;
+        }
+
+        tournamentMessage.innerHTML = '';
+
+        tournamentTableBody.innerHTML = tournaments
+          .map((t) => {
+            const participantsCount = Array.isArray(t.participants)
+              ? t.participants.length
+              : 0;
+            const registeredCount = Array.isArray(t.registeredPlayers)
+              ? t.registeredPlayers.length
+              : 0;
+
+            return `
+              <tr>
+                <td><code>${t._id}</code></td>
+                <td>${t.hostId || ''}</td>
+                <td>${participantsCount}</td>
+                <td>${registeredCount}</td>
+                <td>${t.active ? 'Yes' : 'No'}</td>
+              </tr>
+            `;
+          })
+          .join('');
+
+        tournamentTable.style.display = '';
+      } catch (err) {
+        console.error(err);
+        tournamentMessage.innerHTML =
+          '<div class="alert alert-danger">Error loading active tournaments.</div>';
+        tournamentTable.style.display = 'none';
+        tournamentTableBody.innerHTML = '';
+      }
+    }
+
+    // initial load + refresh button
+    loadActiveTournaments();
+    refreshBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      loadActiveTournaments();
+    });
+  });
+</script>
+
+
+
 <%- include('Partials/footer') %>

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors'; //allows the frontend to talk with the backend
-import {stores, tournaments, players, decks } from './public/data.js'
+//import {stores, tournaments, players, decks } from './public/data.js'
 
 import dotenv from 'dotenv';
 dotenv.config(); //load host ID which is imported from .env
@@ -11,6 +11,13 @@ dotenv.config(); //load host ID which is imported from .env
 import Tournament from "./models/Tournament.js";
 import Store from "./models/Store.js";
 import Player from "./models/Player.js";
+
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 
 //MongoDB implementation
@@ -20,13 +27,35 @@ mongoose.connect(process.env.MONGO_URI)
 
 const app = express(); //creates express server object and start webpage
 
+//telling express how to render EJS pages
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+
+
 app.use(cors()); //Enables CORS for all routes :3
 app.use(bodyParser.json()); //Middleware which parses JSON
 app.use(express.urlencoded({extended: true})) //Middleware which allows express to read data from forms which are sent from HTML
 app.use(express.static('public')); //serves static files
 
+//Server.js page routes which take precedent over the previous app.js routes
+app.get("/", (req, res) => {
+  res.render("index", { title: "DrawThree" });
+});
+
+app.get("/store", (req, res) => {
+  res.render("store", { title: "DrawThree | Find a Store" });
+});
+
+app.get("/tournament", (req, res) => {
+  res.render("tournament", { title: "DrawThree | Tournaments" });
+});
+
+
+
+
 //group comment for all the stuff. we use async here for await which helps with error catching. if promise is returned, all is well. if not, 
 //then we catch it and post error msg
+
 
 //for verifying the tourny hosyt id :3
 app.post('/api/verify-host', async (req, res) => {
