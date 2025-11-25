@@ -1,0 +1,15 @@
+<%- include('partials/header') %>
+  <title>Select a City</title>
+</head>
+<body>
+  <h1>Pick a City</h1>
+
+  <% cities.forEach(c => { %>
+    <form action="/findastore/<%= c %>">
+      <button><%= c.toUpperCase() %></button>
+    </form>
+  <% }); %>
+
+  <br>
+  <a href="/">Back Home</a>
+<%- include('partials/footer') %>

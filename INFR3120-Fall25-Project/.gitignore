@@ -1,0 +1,5 @@
+# files which are named in the .gitignore are ignored from being updated for the sake of simplicity or for security purposes in the case of the .env file which stores the connection string for mongoDB
+.env
+
+node_modules/
+

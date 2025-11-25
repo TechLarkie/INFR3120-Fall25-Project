@@ -1,0 +1,126 @@
+<!--Store page webpage code-->
+
+
+<%- include('Partials/header') %>
+
+<div class="container my-4">
+  <h1 class="mb-3">Find a Store</h1>
+  <p class="text-muted">
+    Enter the name of a city to find participating DrawThree Stores.
+  </p>
+
+  <!--creating the search form-->
+  <form id="storeSearchForm" class="row g-3 mb-4">
+    <div class="col-md-6">
+      <label for="cityInput" class="form-label">City</label>
+      <input
+        type="text"
+        class="form-control"
+        id="cityInput"
+        placeholder="e.g. Toronto"
+        required
+      />
+    </div>
+      <!--button for the search form-->
+    <div class="col-md-3 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">
+        Search
+      </button>
+    </div>
+  </form>
+
+  <!--this is being used to show either success or error messages-->
+  <div id="storeMessage" class="mb-3"></div>
+
+  <!--the code below creates a result table with the requested information from the user-->
+  <div class="table-responsive">
+    <table class="table table-striped" id="storeResultsTable" style="display:none;">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">Store Name</th>
+          <th scope="col">City</th>
+          <th scope="col">Address</th>
+        </tr>
+      </thead>
+      <tbody id="storeResultsBody">
+        <!--Rows will be injected by JS-->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!--event listeners which will wait for HTML to be loaded before before grabbing the listed references-->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('storeSearchForm');
+    const cityInput = document.getElementById('cityInput');
+    const messageDiv = document.getElementById('storeMessage');
+    const table = document.getElementById('storeResultsTable');
+    const tbody = document.getElementById('storeResultsBody');
+
+    form.addEventListener('submit', async (e) => { //submit event handler
+      e.preventDefault();
+
+      const city = cityInput.value.trim();
+
+      //if the user does not enter a city into the requested field
+      if (!city) {
+        messageDiv.innerHTML =
+          '<div class="alert alert-warning">Please enter a city :( ! .</div>';
+        table.style.display = 'none';
+        tbody.innerHTML = '';
+        return;
+      }
+
+      messageDiv.innerHTML =
+        '<div class="alert alert-info mb-2">Searching stores...</div>';
+      table.style.display = 'none';
+      tbody.innerHTML = '';
+
+      try {
+        const res = await fetch(`/api/stores/${encodeURIComponent(city)}`); //this is actually calling backend API
+        if (!res.ok) {
+          throw new Error('Request failed');
+        }
+
+        const stores = await res.json();
+
+        if (!Array.isArray(stores) || stores.length === 0) { //basically just outputs a message saying that there was no stores found if the city that the user typed does not have any cities in it
+          messageDiv.innerHTML =
+            '<div class="alert alert-warning">Unfortunately there were no stores found in this city :( !.</div>';
+          table.style.display = 'none';
+          tbody.innerHTML = '';
+          return;
+        }
+
+        //success message which shows how many stores were found
+        messageDiv.innerHTML =
+          '<div class="alert alert-success">Found ' +
+          stores.length +
+          ' store(s).</div>';
+            
+        tbody.innerHTML = stores //literally builds a table with all of the stores and their accompanying info
+          .map(
+            (store) => `
+            <tr>
+              <td>${store.name || ''}</td>
+              <td>${store.city || ''}</td>
+              <td>${store.address || ''}</td>
+            </tr>
+          `
+          )
+          .join('');
+
+        table.style.display = ''; //table is finally displayed
+      } catch (err) {
+        console.error(err);
+        messageDiv.innerHTML =
+          '<div class="alert alert-danger">Error searching stores. Please try again >:(.</div>';
+        table.style.display = 'none';
+        tbody.innerHTML = '';
+      }
+    });
+  });
+</script>
+
+<%- include('Partials/footer') %>

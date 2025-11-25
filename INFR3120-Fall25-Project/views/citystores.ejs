@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+  <h1>Card Stores in <%= city.toUpperCase() %></h1>
+
+  <ul>
+    <% stores.forEach(store => { %>
+      <li>
+        <strong><%= store.name %></strong> — <%= store.city %>
+      </li>
+    <% }) %>
+  </ul>
+
+  <br>
+  <a href="/findastore/find">Pick Another City</a>
+  <br><br>
+  <a href="/">Back Home</a>
+<%- include('partials/header') %>
