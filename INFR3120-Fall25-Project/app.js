@@ -11,7 +11,10 @@ require("./MongoConfig/mongoDB-Config")
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const storeRouter = require('./routes/store');
+<<<<<<< HEAD
 const cityRouter = require('./routes/city');
+=======
+>>>>>>> fabbc98787dfc7cb3f7a0c51734ccf75ddfbc2d8
 const tournamentRouter = require('./routes/tournament');
 
 var app = express();
@@ -30,7 +33,10 @@ app.use(express.static(path.join(__dirname, 'node_modules')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/store', storeRouter);
+<<<<<<< HEAD
 app.use('/findastore', cityRouter);
+=======
+>>>>>>> fabbc98787dfc7cb3f7a0c51734ccf75ddfbc2d8
 app.use('/tournament', tournamentRouter);
 
 // catch 404 and forward to error handler
