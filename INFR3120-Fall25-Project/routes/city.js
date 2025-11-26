@@ -4,9 +4,9 @@ const path = require('path');
 const fs = require('fs');
 
 //IF U WANT A STORE... U NEED A CITY. YK??
-router.get('/find', (req, res) => {
+router.get('/findastore', (req, res) => {
   const cities = ['toronto', 'vaughan', 'oshawa'];
-  res.render('pick-city', { cities });
+  res.render('pickcity', { cities });
 });
 
 //this will load the city file u chose
@@ -19,7 +19,7 @@ router.get('/:city', (req, res) => {
   }
 
   const stores = JSON.parse(fs.readFileSync(filePath));
-  res.render('city-stores', { city, stores });
+  res.render('citystores', { city, stores });
 });
 
 module.exports = router;
