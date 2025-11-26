@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 //IF U WANT A STORE... U NEED A CITY. YK??
-router.get('/findastore', (req, res) => {
+router.get('/', (req, res) => {
   const cities = ['toronto', 'vaughan', 'oshawa'];
   res.render('pickcity', { cities });
 });
