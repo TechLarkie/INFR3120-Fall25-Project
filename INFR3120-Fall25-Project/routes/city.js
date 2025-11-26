@@ -12,9 +12,10 @@ router.get('/', (req, res) => {
 //this will load the city file u chose
 router.get('/:city', (req, res) => {
   const city = req.params.city.toLowerCase();
-  const filePath = path.join(__dirname, '..', 'data', `${city}.json`);
+  const filePath = path.join('data', `${city}.json`);
 
-  if (!fs.existsSync(filePath)) {
+  if (!fs.existsSync(filePath)) 
+  {
     return res.status(404).send("Error 404: City Not Found :(");
   }
 
@@ -22,4 +23,4 @@ router.get('/:city', (req, res) => {
   res.render('citystores', { city, stores });
 });
 
-module.exports = router;
+export default router;
