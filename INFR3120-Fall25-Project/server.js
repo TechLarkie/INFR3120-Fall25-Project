@@ -16,6 +16,7 @@ dotenv.config(); //load host ID which is imported from .env
 import Tournament from "./models/Tournament.js";
 import Store from "./models/Store.js";
 import Player from "./models/Player.js";
+import cityRouter from './routes/city.js'; 
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -42,6 +43,7 @@ app.use(bodyParser.json()); //Middleware which parses JSON
 app.use(express.urlencoded({extended: true})) //Middleware which allows express to read data from forms which are sent from HTML
 app.use(express.static('public')); //serves static files
 
+app.use('/findastore', cityRouter);
 
 //login sessions
 app.use(
