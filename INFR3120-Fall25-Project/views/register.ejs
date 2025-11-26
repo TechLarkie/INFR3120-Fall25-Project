@@ -1,0 +1,51 @@
+<!--HTML and Javascript for the registration page-->
+
+<%- include("Partials/header")%>
+<%- include("Partials/navbar") %>
+
+
+
+<div class="container my-4" style="max-width: 520px;">
+    <!--main page for the registration-->
+  <h1 class="mb-3">Register</h1>
+  <% if (typeof flash !== 'undefined' && flash && flash.message) { %>  <!--this is a similar flash message to what is included in login.ejs-->
+    <div class="alert alert-<%= flash.type || 'danger' %>"><%= flash.message %></div>
+  <% } %>
+
+  <form method="POST" action="/register" class="row g-3">
+
+    <input type="hidden" name="next" value="<%= next || '/' %>"/>
+
+    <!--username field-->
+    <div class="col-12">
+      <label class="form-label" for="username">Username</label>
+      <input class="form-control" id="username" name="username" type="text" minlength="3" maxlength="32" required />
+    </div>
+
+    <div class="col-12">
+      <label class="form-label" for="email">Email</label>
+      <input class="form-control" id="email" name="email" type="email" required />
+    </div>
+
+    <!--password field-->
+    <div class="col-12">
+      <label class="form-label" for="password">Password</label>
+      <input class="form-control" id="password" name="password" type="password" minlength="8" required />
+      <div class="form-text">Use at least 8 characters.</div>
+    </div>
+
+    <!--password confirmation-->
+    <div class="col-12">
+      <label class="form-label" for="confirmPassword">Confirm Password</label>
+      <input class="form-control" id="confirmPassword" name="confirmPassword" type="password" minlength="8" required />
+    </div>
+
+    <!--create account button-->
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary" type="submit">Create account</button>
+      <a class="btn btn-outline-secondary" href="/login?next=<%= encodeURIComponent(next || '/') %>">Back to login</a>
+    </div>
+  </form>
+</div>
+
+<%- include('Partials/footer')%>
