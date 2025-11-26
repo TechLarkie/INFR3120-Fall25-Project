@@ -1,0 +1,67 @@
+<!--the HTML and JavaScript code for the login page (this page is going to be used by those who already have an account)-->
+
+
+
+<%- include("Partials/header")%>
+
+<div class="container my-4" style="max-width: 520px;">
+  <h1 class="mb-3">Login</h1>
+
+
+  <!--this is for displaying a temporary message whenever a user types in the incorrect information like wrong password or email-->
+  <% if (flash && flash.message) { %>
+  <div class="alert alert-<%= flash.type || 'danger' %>">
+    <%= flash.message %>
+  </div>
+<% } %>
+
+<!--basically the submission for the login form-->
+<form method="POST" action="/login" class="row g-3">
+    <input type="hidden" name="next" value="<%= next || '/' %>"/>
+<!--the field that the user will input their email into-->
+ <div class="col-12">
+      <label class="form-label" for="email">Email</label>
+      <input class="form-control" id="email" name="email" type="email" required />
+    </div>
+<!--field for the user to input their password-->
+    <div class="col-12">
+      <label class="form-label" for="password">Password</label>
+      <input class="form-control" id="password" name="password" type="password" required />
+    </div>
+<!--this is the login button which is uses the submit type as a base-->
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary" type="submit">Login</button>  
+
+
+    <div class="col-12">
+  <!--this is a redirect incase the user doesnt already have an account, also when you go to make the register page, call it register.ejs so that this just works with it-->
+  <p class="mb-0">
+    Don’t have an account?
+    <a href="/register?next=<%= encodeURIComponent(next || '/') %>">Register</a>
+  </p>
+    
+    </div>
+  </form>
+</div>
+
+
+<%- include("Partials/footer")%>
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+<%- include("Partials/footer")%>
+
