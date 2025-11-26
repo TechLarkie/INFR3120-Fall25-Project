@@ -23,9 +23,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const cityRouter = require('./routes/city.js');
+import cityRouter from "./routes/city.js";
 
 //MongoDB implementation
 mongoose.connect(process.env.MONGO_URI)
