@@ -16,7 +16,11 @@ router.get('/', (req, res) => {
 //this will load the city file u chose
 router.get('/:city', (req, res) => {
   const city = req.params.city.toLowerCase();
-  const filePath = path.join('data', `${city}.json`);
+  const filePath = path.join(__dirname, "..", "data", `${city}.json`);
+
+  console.log("Resolved Path:", filePath);
+  console.log("Exists:", fs.existsSync(filePath));
+
 
   if (!fs.existsSync(filePath)) 
   {
