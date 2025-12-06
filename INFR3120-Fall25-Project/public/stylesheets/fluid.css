@@ -1,3 +1,4 @@
+/*General comment for all code below - All of the code below is to just make the site have addiitonal style and detailing*/
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   background-color: #0B0C10 !important;
@@ -5,9 +6,15 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  color: #00B7FF !important;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  color: #66FCF1  !important;
+}
+
+
+
 nav {
-  color:#1F2833;
+  color:#1F2833 !important;
 }
