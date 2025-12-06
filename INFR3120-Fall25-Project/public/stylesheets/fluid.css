@@ -1,8 +1,12 @@
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  color: red;
+  background-color: #0B0C10;
 }
 
 a {
   color: #00B7FF;
+}
+
+nav {
+  color:#1F2833;
 }
